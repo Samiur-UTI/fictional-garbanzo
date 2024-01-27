@@ -22,7 +22,7 @@ export class AuthService {
   }
 
   async jwtSign(email: {email:string}): Promise<string> {
-    const payload = { email };
+    const payload = email ;
     return this.jwtService.sign(payload);
   }
 }

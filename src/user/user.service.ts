@@ -46,7 +46,7 @@ export class UserService {
   }
 
   async login(email: string, password: string): Promise<string | null> {
-    const user = await this.userRepository.findOne({ where :{email} });
+    const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -63,5 +63,26 @@ export class UserService {
     // Generate and return a JWT token if authentication is successful
     const payload = { email: user.email };
     return this.authService.jwtSign(payload);
+  }
+
+  async getUserDetails(email: string): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['profile'],
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // Extracting the necessary details
+    const userDetails = {
+      firstName: user.profile.firstName,
+      lastName: user.profile.lastName,
+      email: user.email,
+      phoneNumber: user.profile.phoneNumber,
+    };
+
+    return userDetails;
   }
 }

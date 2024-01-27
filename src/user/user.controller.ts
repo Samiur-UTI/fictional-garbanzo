@@ -1,10 +1,11 @@
 /* eslint-disable prettier/prettier */
 // user.controller.ts
-import { Controller, Post, Body, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, Res, UseGuards, Get, Request } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from 'src/model/dto/create-user.dto';
 import { Response } from 'express';
 import { LoginDto } from 'src/model/dto/login.dto';
+import { AuthGuard } from 'src/auth/jwt-auth.guad';
 
 @Controller('/')
 export class UserController {
@@ -41,6 +42,20 @@ export class UserController {
       }
     } catch (error) {
       // Handle login errors here and return an appropriate response
+      return res.status(HttpStatus.BAD_REQUEST).json({ error: error.message });
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('get-user')
+  async getUser(@Request() req, @Res() res: Response) {
+    try {
+      const userEmail = req.user.email; 
+      const userDetails = await this.userService.getUserDetails(userEmail);
+
+      return res.status(HttpStatus.OK).json(userDetails);
+    } catch (error) {
+      // Handle errors here and return an appropriate response
       return res.status(HttpStatus.BAD_REQUEST).json({ error: error.message });
     }
   }
