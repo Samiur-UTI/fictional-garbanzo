@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 // user.service.ts
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/model/entity/user.entity';
 import { Repository } from 'typeorm';
@@ -45,5 +45,23 @@ export class UserService {
     return user;
   }
 
+  async login(email: string, password: string): Promise<string | null> {
+    const user = await this.userRepository.findOne({ where :{email} });
 
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const isPasswordValid = await this.authService.comparePasswords(
+      password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    // Generate and return a JWT token if authentication is successful
+    const payload = { email: user.email };
+    return this.authService.jwtSign(payload);
+  }
 }
