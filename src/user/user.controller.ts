@@ -6,12 +6,16 @@ import { CreateUserDto } from 'src/model/dto/create-user.dto';
 import { Response } from 'express';
 import { LoginDto } from 'src/model/dto/login.dto';
 import { AuthGuard } from 'src/auth/jwt-auth.guad';
-
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { GetUserResponseDto, LoginResponseDto, RegisterResponseDto } from 'src/model/dto/response.dto';
 @Controller('/')
+@ApiTags('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('register')
+  @ApiOperation({ summary: 'Register a new user' })
+  @ApiResponse({ status: 200, description: 'Successfully created user!' , type:RegisterResponseDto})
   async registerUser(
     @Body() createUserDto: CreateUserDto,
     @Res() res: Response,
@@ -27,6 +31,8 @@ export class UserController {
   }
 
   @Post('login')
+  @ApiOperation({ summary: 'Login with a user' })
+  @ApiResponse({ status: 200, description: 'Returns a jwt token', type:LoginResponseDto })
   async loginUser(
     @Body() loginDto: LoginDto,
     @Res() res: Response,
@@ -48,6 +54,8 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Get('get-user')
+  @ApiOperation({ summary: 'Retrieve user information' })
+  @ApiResponse({ status: 200, description: 'Returns user information', type:GetUserResponseDto })
   async getUser(@Request() req, @Res() res: Response) {
     try {
       const userEmail = req.user.email; 
