@@ -5,7 +5,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from 'src/model/dto/create-user.dto';
 import { Response } from 'express';
 import { LoginDto } from 'src/model/dto/login.dto';
-import { AuthGuard } from 'src/auth/jwt-auth.guad';
+import { AuthGuard } from 'src/auth/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { GetUserResponseDto, LoginResponseDto, RegisterResponseDto } from 'src/model/dto/response.dto';
 @Controller('/')
